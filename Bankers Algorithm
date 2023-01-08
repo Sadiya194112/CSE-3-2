@@ -1,0 +1,107 @@
+#include<bits/stdc++.h>
+using namespace std;
+int n,r,i,j,k,g,x,p_no,avail[10],seq[10],cnt,c,rc;
+
+struct process{
+    int alloc[10];
+    int mx[10];
+    int need[10];
+    bool flag;
+};
+
+void Bankers(process p[], int n){
+    for(i=0; i<n; i++){
+        for(j=0; j<r; j++){
+            p[i].need[j] = p[i].mx[j]-p[i].alloc[j];
+            if(p[i].need[j]<0)  p[i].need[j]=0;
+        }
+    }
+    while(cnt!=n){
+        g=0;
+        for(i=0; i<n; i++){
+            if(p[i].flag==0){
+                rc=0;
+                for(j=0; j<r; j++){
+                    if(avail[j]>=p[i].need[j])  rc++;
+                    else    break;
+                }
+                if(rc==r){
+                    cout<<"P"<<i<<" is completed and";
+                    seq[c++] = i;
+                    p[i].flag = true;
+
+                    cout<<" available [ ";
+                    for(k=0; k<r; k++){
+                        avail[k] = avail[k]+p[i].alloc[k];
+                        cout<<avail[k]<<" ";
+                    }
+                    cout<<"]\n";
+                    cnt++;
+                    g=1;
+                }
+            }
+        }
+        if(g==0){
+           cout<<"Request can't be granted.\n";
+           cout<<"System is in unsafe state.\n";
+           goto y;
+        }
+    }
+    cout<<"System is in safe state.\n";
+    cout<<"Safe sequence is [";
+    for(i=0; i<c; i++)  cout<<"P"<<seq[i]<<"->";
+    cout<<"]\n";
+y:
+    cout<<endl;
+    cout<<"Process"<<setw(20)<<"Allocation"<<setw(16)<<"Max"<<setw(21)<<"Need\n";
+    for(i=0; i<n; i++){
+        cout<<"  P"<<i<<setw(16);
+        for(j=0; j<r; j++)  cout<<p[i].alloc[j]<<" ";
+        cout<<setw(15);
+        for(j=0; j<r; j++)  cout<<p[i].mx[j]<<" ";
+        cout<<setw(15);
+        for(j=0; j<r; j++)  cout<<p[i].need[j]<<" ";
+        cout<<endl;
+
+    }
+}
+void ResourceRequest(process p[], int n){
+    cout<<"Enter Process Number: ";
+    cin>>p_no;
+    cout<<"Enter New Request Details: ";
+    for(i=0; i<r; i++){
+        cin>>x;
+        p[p_no].alloc[i] += x;
+        avail[i] = avail[i]-x;
+    }
+}
+signed main(){
+    cout<<"Enter no. of processes and resources: ";
+    cin>>n>>r;
+    process p[n+2];
+    cout<<"Allocation and Max:\n";
+    for(i=0; i<n; i++){
+        cout<<"P"<<i<<": \n";
+        for(j=0; j<r; j++)  cin>>p[i].alloc[j];
+        for(j=0; j<r; j++)  cin>>p[i].mx[j];
+        p[i].flag=false;
+    }
+    cout<<"Available: \n";
+    for(i=0; i<r; i++)  cin>>avail[i];
+    cout<<endl;
+    Bankers(p, n);
+
+    return 0;
+}
+
+
+
+
+INPUT:	Processes and Resources: 5 3
+	Allocation	 Max		Need		Available
+  	0 1 0		  7 5 3		7 4 3	  	  3 3 2
+  	2 0 0		  3 2 2		1 2 2 
+  	3 0 2		  9 0 2		6 0 0
+  	2 1 1		  2 2 2		0 1 1
+    0 0 2		  4 3 3		4 3 1
+      
